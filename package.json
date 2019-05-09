@@ -1,0 +1,52 @@
+{
+  "name": "gstep-mobile",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "npm run serve",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "postcss-px-to-viewport": "0.0.3",
+    "vant": "^1.5.0",
+    "vue": "^2.5.17",
+    "vue-axios": "^2.1.4",
+    "vue-router": "^3.0.2",
+    "vuex": "^3.1.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.2.0",
+    "@vue/cli-plugin-eslint": "^3.2.0",
+    "@vue/cli-service": "^3.3.1",
+    "babel-eslint": "^10.0.1",
+    "babel-plugin-import": "^1.11.0",
+    "eslint": "^5.8.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-vue": "^5.0.0-0",
+    "mockjs": "^1.0.1-beta3",
+    "node-sass": "^4.11.0",
+    "postcss-pxtorem": "^4.0.1",
+    "sass-loader": "^7.1.0",
+    "style-resources-loader": "^1.2.1",
+    "stylelint": "^9.10.1",
+    "stylelint-config-standard": "^18.2.0",
+    "vue-template-compiler": "^2.5.17"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "stylelint": {
+    "extends": "stylelint-config-standard"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}

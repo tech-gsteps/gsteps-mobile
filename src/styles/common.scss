@@ -1,0 +1,63 @@
+body {
+  background-color: #1D1E1F;
+}
+.class-input-wrapper {
+  .van-picker__title {
+    color: #323233;
+  }
+  .van-cell-group {
+    background-color: transparent;
+    .van-cell {
+      background-color: transparent;
+      color: #fff;
+    }
+  }
+  .card-popup {
+    .van-cell-group {
+      .van-cell {
+        color: $color-black;
+      }
+    }
+  }
+  .van-stepper__minus, .van-stepper__plus {
+    background: transparent;
+  }
+  .van-stepper__input {
+    background: transparent;
+    color: $color-white;
+  }
+}
+
+.van-button.confirm-button {
+  text-align: center;
+  background-color: $color-yellow;
+  border: none;
+  width: 300px;
+  border-radius: 33px;
+  position: relative;
+  margin-top: 30px;
+  color: $color-black;
+  font-size: 15px;
+  font-weight: 400;
+  left: 50%;
+  margin-left: -150px;
+  &.disabled {
+    background-color: rgba($color-white, 0.5);
+    color: rgba($color-black, 0.5);
+  }
+}
+.overflow-wrapper {
+  padding-bottom: 50px;
+}
+
+.g-navbar.van-nav-bar {
+  background-color: $color-yellow-lite;
+  border-bottom: none;
+  .van-nav-bar__text, .van-icon {
+    color: $color-white;
+  }
+}
+
+// #app [class*=van-hairline]::after {
+//   border-bottom: 1px solid rgba(230,230,230,0.2);
+// }
