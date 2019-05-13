@@ -12,11 +12,11 @@
       <div class="card--type card--text-color">
         {{ card.name }}
       </div>
-    <div class="card--timesleft card--text-color" v-if="card.name !=='期限卡'">
-        剩余{{ card.remains }}次
+    <div class="card--timesleft card--text-color" v-if="card.card_type_id !==1">
+        {{ getRemainsInfo.remains }}
       </div>
-      <div class="card--timesall card--text-color" v-if="card.name !=='期限卡'">
-        <span>{{ card.limit }}</span>次
+      <div class="card--timesall card--text-color" v-if="card.card_type_id !==1">
+        <span>{{ getRemainsInfo.limit }}</span>
       </div>
     </div>
     <div class="decorator card--text-color">
@@ -45,6 +45,19 @@ export default {
         passive: this.card.status !== '已激活',
       };
     },
+    getRemainsInfo(){
+			// 价格显示字段
+			let t = '';
+			if (this.card.card_type_id === 2) {
+				t = '元';
+			} else {
+				t = '次';
+			}
+			return {
+				remains: `剩余${this.card.remains}${t}`,
+				limit: `${this.card.limit}${t}`,
+      };
+    }
   },
 };
 </script>

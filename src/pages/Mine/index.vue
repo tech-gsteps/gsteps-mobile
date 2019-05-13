@@ -3,19 +3,29 @@
     <div class="my-box">
       <div class="my-box__info">
         <div class="my-box__user-info">
-          <div class="avatar">
-            <img
-              :src="membership.icon"
-              alt=""
-            >
+          <div class="user-info-1">
+            <div class="avatar">
+              <img
+                      :src="membership.icon"
+                      alt=""
+              >
+            </div>
+            <div>
+              <p class="font--larger">
+                {{ membership.name }}
+              </p>
+              <p class="font--medium">
+                会员ID {{ membership.member_id }}
+              </p>
+            </div>
           </div>
-          <div>
-            <p class="font--larger">
-              {{ membership.name }}
-            </p>
-            <p class="font--medium">
-              会员ID {{ membership.member_id }}
-            </p>
+          <div class="other-user" v-if="otherUserList.length > 0" >
+            <VanCell
+                    title="切换账号"
+                    is-link
+                    arrow-direction="down"
+                    @click="handlePopup('user')"
+            />
           </div>
         </div>
         <!-- <div
@@ -62,10 +72,24 @@
       :key="index"
       :card="card"
     />
+
+    <VanPopup
+            v-model="showPicker"
+            position="bottom"
+    >
+      <VanPicker
+              :columns="pickerConfig.columns"
+              show-toolbar
+              :title="pickerConfig.title"
+              @cancel="onCancel"
+              @confirm="onConfirm"
+      />
+    </VanPopup>
   </div>
 </template>
 <script>
 import Card from './Card.vue';
+import { Dialog } from 'vant';
 
 export default {
   components: {
@@ -74,12 +98,33 @@ export default {
   data() {
     return {
       membership: {},
+			otherUserList: [],
+			exchangeUser: null,
+			pickerType: '',
+			showPicker: false,
+			pickerConfig: {
+				columns: [],
+				title: '',
+			},
     };
   },
   created() {
     this.$axios.post('/api/membership/detail').then(response => {
       this.membership = response.data.res;
-      console.log(this.membership);
+      // this.currentUser =
+    });
+    // 获取账户关系,子账号,母账户等
+    this.$axios.post('/api/user/info').then(response => {
+      // this.membership = response.data.res;
+      if( response.data.res) {
+      	if(response.data.res.child_list && response.data.res.child_list.length > 0) {
+					this.otherUserList = response.data.res.child_list;
+        } else if (response.data.res.parent_list && response.data.res.parent_list.length > 0) {
+					this.otherUserList = response.data.res.parent_list;
+				} else {
+					this.otherUserList = [];
+        }
+      }
     });
   },
   methods: {
@@ -87,7 +132,48 @@ export default {
       this.$axios.post('/api/user/logout').then(response => {
       });
     },
+		handlePopup(type) {
+			this.showPicker = true;
+			this.pickerType = 'user';
+			if(type === 'user') {
+				this.pickerConfig.title = '请选择要切换的账号';
+				this.pickerConfig.columns = [{
+					values: this.otherUserList.map(item => item.name),
+					defaultIndex: 0,
+				}];
+      }
+    },
+		onCancel() {
+			this.showPicker = false;
+		},
+		onConfirm(value, index) {
+			switch (this.pickerType) {
+				case 'user': {
+					const user = this.otherUserList[index];
+					Dialog.confirm({
+						title: '确认切换',
+						message: `切换到【${user.name}】`,
+					}).then(() => {
+						this.exchangeUser = user;
+						// 切换登录
+						this.$axios.post('/api/user/relationlogin', { relation_user_id: this.exchangeUser.id }).then(response => {
+              window.location.reload();
+						});
+					}).catch(() => {
+						// on cancel
+					});
+
+					break;
+				}
+				default:
+					break;
+			}
+			this.showPicker = false;
+		},
   },
+	computed: {
+
+  }
 
 };
 </script>
@@ -115,12 +201,26 @@ export default {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
-    .my-box__user-info {
+    .my-box__user-info{
       display: flex;
       align-items: center;
+      width: 100%;
+      justify-content: space-between;
+
+      .user-info-1 {
+        display: flex;
+        align-items: center;
+      }
     }
     .my-box__logout {
       font-size: 10px;
+    }
+
+    .other-user {
+      .van-cell {
+        background: none;
+        padding: 0;
+      }
     }
 
   }

@@ -32,8 +32,8 @@ export default {
         start_time: '',
         studio_id: 0,
         classroom_id: 0,
-        card_ids: [],
-        spend: 0,
+				card_types: [],
+				cardList: [],
         teacher_id: 0,
       },
     };
@@ -44,8 +44,18 @@ export default {
     };
     const response = await this.$axios.post('/api/activity/info', sendData);
     const response1 = await this.$axios.post('/api/activity/related');
+		this.currentData = {...this.currentData, ...response.data.res};
 
-    this.currentData = response.data.res;
+		// 可使用的卡信息, 初始化页面需要的数据
+		if(this.currentData.card_list) {
+			for(let card of this.currentData.card_list) {
+				this.currentData.card_types.push(card.card_id);
+				this.currentData.cardList.push({
+					id: card.card_id,
+					spend: card.spend,
+        })
+      }
+    }
     this.relateData = response1.data.res;
     this.visible = true;
   },

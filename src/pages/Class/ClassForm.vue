@@ -49,16 +49,20 @@
         :value="teacherValue"
         @click="handlePopup('teacher')"
       />
-      <VanCell
-        title="课卡类型"
-        is-link
-        arrow-direction="down"
-        :value="cardValue"
-        @click="handleCardPopup('card')"
-      />
-      <VanCell title="消费次数">
-        <VanStepper v-model="currentData.spend" />
-      </VanCell>
+      <div class="card-list">
+
+        <VanCell
+          title="课卡类型"
+          is-link
+          arrow-direction="down"
+          :value="cardValue"
+          @click="handleCardPopup('card')"
+        />
+        <VanCell v-for="(item, index) in cardValueList" :key="item.id" :title="item.name">
+          <VanStepper :default-value="item.spend" @change="handleSpend($event, item.id)" />
+        </VanCell>
+      </div>
+
     </VanCellGroup>
 
     <VanPopup
@@ -92,6 +96,7 @@
     >
       <VanCheckboxGroup
         v-model="card_types"
+        :default-value="card_types"
         @change="hanldeCardChange"
       >
         <VanCellGroup>
@@ -167,6 +172,33 @@ export default {
     cardValue() {
       return this.relateData.card.filter(item => this.currentData.card_types.includes(item.id)).map(item => item.name).join(',');
     },
+    cardValueList() {
+    	const ret = [];
+      this.relateData.card.forEach(item => {
+      	if(this.currentData.card_types.includes(item.id)) {
+      		// let defultSpend = 1;// 默认消耗次数
+          // // let card = this.relateData.cards.find((c)=>{
+          // // 	return c.id === item.id;
+          // // });
+          // // 如果是储值卡,则默认消耗 150
+          // if(item.type_id === 2) {
+					// 	defultSpend = 150;
+          // }
+      		const tmp = { ...item, spend: 1};
+
+      		if(this.currentData.cardList) {
+      			for(const c of this.currentData.cardList) {
+      				if(c.id === item.id) {
+								tmp.spend = c.spend;
+              }
+            }
+          }
+					ret.push(tmp);
+				}
+      });
+      return ret;
+    },
+
   },
   data() {
     return {
@@ -192,11 +224,53 @@ export default {
     };
   },
   created() {
-
+    this.card_types = this.currentData.card_types;
   },
   methods: {
     onChange(picker, value, index) {
       // this.$toast(`当前值：${value}, 当前索引：${index}`);
+    },
+    // 选择课卡类型
+		hanldeCardChange(data) {
+			this.currentData.card_types = data;
+			// 初始化提交的可用卡数据
+			let tmpcardList = [];
+			const cardList = this.currentData.cardList;
+			if(data && data.length > 0) {
+				tmpcardList = data.map(id => {
+					let spend = 1;// 默认消耗次数
+					const card = this.relateData.card.find((c) =>{
+						return c.id === id;
+					});
+					// 如果是储值卡,则默认消耗 150
+					if(!!card && card.type_id === 2) {
+						spend = 150;
+					}
+					const obj = cardList.find(i => {
+						if(i.id === id) {
+							return i;
+            }
+          });
+					if(obj) {
+						spend = obj.spend;
+          }
+					return {
+						id: id,
+						spend: spend,
+          };
+        });
+
+			}
+			this.currentData.cardList = tmpcardList;
+
+		},
+    handleSpend(spend, id ) {
+    	for(let item of this.currentData.cardList) {
+				if(item.id === id) {
+					item.spend = spend;
+					break;
+				}
+      }
     },
     toggle(index) {
       this.$refs.checkboxes[index].toggle();
@@ -251,10 +325,7 @@ export default {
     handleCardPopup() {
       this.showCardTypePicker = true;
     },
-    hanldeCardChange(data) {
-      this.currentData.card_types = data.join(',');
-      // this.cardValue = this.relateData.card.filter(item => data.includes(item.id)).map(item => item.name).join(',');
-    },
+
     onDateConfirm(time) {
       this.showDatePicker = false;
       this.currentData.start_time = formatAllDate(time);
@@ -313,9 +384,12 @@ export default {
         start_time,
         classroom_id,
         teacher_id,
-        card_types,
-        spend,
+				cardList,
       } = this.currentData;
+      let card_list = [];
+      if(cardList) {
+				card_list = JSON.stringify(cardList);
+      }
       const sendData = {
         course_level_id,
         course_kind_id,
@@ -323,8 +397,7 @@ export default {
         start_time,
         classroom_id,
         teacher_id,
-        card_types,
-        spend,
+				card_list,
       };
       let url;
       const ADD_URL = '/api/activity/add';
@@ -335,15 +408,17 @@ export default {
         url = EDIT_URL;
         sendData.activity_id = this.$route.query.id;
       }
+
       this.$axios.post(url, sendData).then(response => {
         if (response.data.code === 0) {
-          this.$toast('创建成功');
-          this.$router.push({
-            name: 'classDetail',
-            query: {
-              id: response.data.res.activity_id,
-            },
-          });
+          this.$toast('保存成功');
+					this.$router.go(-1); //
+          // this.$router.replace({
+          //   name: 'classDetail',
+          //   query: {
+          //     id: response.data.res.activity_id,
+          //   },
+          // });
         } else {
           this.$toast(response.data.msg);
         }
@@ -368,4 +443,8 @@ export default {
 .card-popup {
   color: $color-black;
 }
+  .card-list {
+    border: 1px solid #838587;
+    margin-top: 30px;
+  }
 </style>

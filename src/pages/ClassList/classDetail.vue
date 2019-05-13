@@ -27,6 +27,9 @@
         <span class="time">
           {{ player.signin_time }}
         </span>
+        <span class="time">
+          {{ player.opt_user_id == player.user_id ? '本人签到':(player.opt_user_name+'代签') }}
+        </span>
       </li>
       <li style="justify-content: center; font-size: 12px;" v-if="palyerList.length === 0">暂时没有记录</li>
     </ul>
@@ -86,8 +89,6 @@
 		},
 		beforeRouteEnter(to, from, next) {
 			next(vm => {
-				// 通过 `vm` 访问组件实例
-				console.log('beforeRouteEnter');
 				if (vm.$store.getters.roleData.role_id === 1 || vm.$store.getters.roleData.role_id === 2) {
 					next();
 				} else {
@@ -97,7 +98,7 @@
 					vm.$axios.post('/api/signin/info', sendData).then(response => {
 						if (response.data.code === 0) {
 							if (response.data.res.result === 0) {
-								vm.$router.push({
+								vm.$router.replace({
 									name: 'orderConfirm',
 									query: {
 										id: vm.$route.query.id,
