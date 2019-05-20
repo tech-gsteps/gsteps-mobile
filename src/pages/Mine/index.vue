@@ -4,11 +4,12 @@
       <div class="my-box__info">
         <div class="my-box__user-info">
           <div class="user-info-1">
-            <div class="avatar">
-              <img
+            <div class="avatar" >
+              <img v-if="!!membership.icon && membership.icon.length > 10"
                       :src="membership.icon"
                       alt=""
               >
+              <p v-else-if="!!membership.name">{{membership.name.split('')[0]}}</p>
             </div>
             <div>
               <p class="font--larger">
@@ -52,14 +53,14 @@
             上课节数
           </p>
         </div>
-        <div>
-          <p class="font--larger">
-            {{ membership.total_counts }}次
-          </p>
-          <p class="font--medium">
-            累计剩余
-          </p>
-        </div>
+<!--        <div>-->
+<!--          <p class="font&#45;&#45;larger">-->
+<!--            {{ membership.total_counts }}次-->
+<!--          </p>-->
+<!--          <p class="font&#45;&#45;medium">-->
+<!--            累计剩余-->
+<!--          </p>-->
+<!--        </div>-->
       </div>
     </div>
     <div>
@@ -116,13 +117,17 @@ export default {
     // 获取账户关系,子账号,母账户等
     this.$axios.post('/api/user/info').then(response => {
       // this.membership = response.data.res;
+      this.otherUserList = [];
       if( response.data.res) {
-      	if(response.data.res.child_list && response.data.res.child_list.length > 0) {
-					this.otherUserList = response.data.res.child_list;
-        } else if (response.data.res.parent_list && response.data.res.parent_list.length > 0) {
-					this.otherUserList = response.data.res.parent_list;
-				} else {
-					this.otherUserList = [];
+        if(response.data.res.child_list && response.data.res.child_list.length > 0) {
+          this.otherUserList = [...this.otherUserList, ...response.data.res.child_list];
+        }
+      	if (response.data.res.parent_list && response.data.res.parent_list.length > 0) {
+          this.otherUserList = [...this.otherUserList, ...response.data.res.parent_list];
+        }
+      	// 兄弟账号
+        if (response.data.res.siblings_list && response.data.res.siblings_list.length > 0) {
+          this.otherUserList = [...this.otherUserList, ...response.data.res.siblings_list];
         }
       }
     });
@@ -150,18 +155,23 @@ export default {
 			switch (this.pickerType) {
 				case 'user': {
 					const user = this.otherUserList[index];
-					Dialog.confirm({
-						title: '确认切换',
-						message: `切换到【${user.name}】`,
-					}).then(() => {
-						this.exchangeUser = user;
-						// 切换登录
-						this.$axios.post('/api/user/relationlogin', { relation_user_id: this.exchangeUser.id }).then(response => {
-              window.location.reload();
-						});
-					}).catch(() => {
-						// on cancel
-					});
+                    this.exchangeUser = user;
+                    // 切换登录
+                    this.$axios.post('/api/user/relationlogin', { relation_user_id: this.exchangeUser.id }).then(response => {
+                      window.location.reload();
+                    });
+					// Dialog.confirm({
+					// 	title: '确认切换',
+					// 	message: `切换到【${user.name}】`,
+					// }).then(() => {
+					// 	this.exchangeUser = user;
+					// 	// 切换登录
+					// 	this.$axios.post('/api/user/relationlogin', { relation_user_id: this.exchangeUser.id }).then(response => {
+                    //       window.location.reload();
+					// 	});
+					// }).catch(() => {
+					// 	// on cancel
+					// });
 
 					break;
 				}
@@ -185,6 +195,8 @@ export default {
   margin: 20px;
   border-radius: 10px 10px 0 0;
   padding: 20px;
+  box-shadow: 0 -5px 10px -5px rgba(0, 0, 0, 0.5) inset;
+
   .avatar {
     width: 60px;
     height: 60px;
@@ -192,8 +204,19 @@ export default {
     overflow: hidden;
     border: 3px solid $color-light-yellow;
     margin-right: 10px;
+    background: #fff1cc;
+    box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 0.5);
     img {
       width: 100%;
+    }
+    p {
+      width: 100%;
+      height: 100%;
+      line-height: 60px;
+      text-align: center;
+      font-size: 30px;
+      color: #e6a06d;
+      font-weight: 600;
     }
   }
   .my-box__info {

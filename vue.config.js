@@ -11,7 +11,8 @@ module.exports = {
     disableHostCheck: true,
     proxy: {
       '/api': {
-        target: 'http://test.signin.tueye.com',
+        // target: 'http://test.signin.tueye.com',
+        target: 'http://180.76.156.27:12001',
         ws: true,
         changeOrigin: true,
       },
