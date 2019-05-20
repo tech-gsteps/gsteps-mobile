@@ -16,6 +16,9 @@
       <p class="class-info">
         {{ detailData.city }}{{ detailData.zone }} {{ detailData.studio_name }} {{ detailData.classroom_name }}
       </p>
+      <p class="class-info">
+        {{getShowCardInfo}}
+      </p>
       <button
         v-if="isEdit"
         class="edit-class"
@@ -61,6 +64,18 @@ export default {
   },
   created() {
     this.src = `/api/activity/qrcode?url=${escape(window.location.href)}`;
+
+  },
+	computed: {
+  	getShowCardInfo() {
+			let list = [];
+			if(this.detailData && this.detailData.card_list) {
+				list = this.detailData.card_list.map(card=>{
+					return `${card.card_name}:${card.spend}`;
+				});
+			}
+			return `  ${list.join(' | ')}`;
+    }
   },
   methods: {
     editClass() {

@@ -60,7 +60,7 @@
             {{ item.course_name }}
           </p>
           <p class="class-info">
-            {{ item.start_time }} {{ item.studio_name }} {{ item.classroom }} 消费{{ item.spend }}次
+            {{ item.start_time }} {{ item.studio_name }} {{ item.classroom }}
           </p>
         </div>
         <VanIcon name="arrow" />
