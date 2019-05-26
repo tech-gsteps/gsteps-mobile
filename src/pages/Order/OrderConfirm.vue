@@ -67,7 +67,7 @@
 <script>
 import ClassInfo from '@/pages/ClassList/ClassInfo.vue';
 import GNavBar from '@/layout/GNavBar';
-
+import { Toast } from 'vant';
 export default {
   components: {
     ClassInfo,
@@ -139,7 +139,13 @@ export default {
         activity_id: this.$route.query.id,
         membership_id: this.selectCard.membership_id,
       };
+      Toast.loading({
+        mask: true,
+        message: '签到中',
+        duration: 10 * 1000,
+      });
       this.$axios.post('/api/signin/add', sendData).then(response => {
+        Toast.clear();
         if (response.data.code === 0) {
           this.$toast.success('消费成功');
           this.$router.replace({
