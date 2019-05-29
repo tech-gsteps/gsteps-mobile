@@ -2,7 +2,7 @@ import axios from 'axios';
 import qs from 'qs';
 
 const Axios = axios.create({
-  timeout: 5000, // 请求超时时间
+  timeout: 15000, // 请求超时时间
 });
 
 /** **** request拦截器==>对请求参数做处理 ***** */

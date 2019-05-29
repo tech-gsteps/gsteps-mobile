@@ -54,7 +54,7 @@ export default {
         studio_id: 0,
         classroom_id: 0,
         card_types: [],
-        spend: 0,
+        cardList: [],
         teacher_id: 0,
       },
       pickerType: '',

@@ -4,14 +4,15 @@ const path = require('path');
 
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production'
-    ? '/front/'
+    ? '//oss.tueye.com/front/'
     : '/',
   devServer: {
     // proxy: 'http://test.signin.tueye.com',
     disableHostCheck: true,
     proxy: {
       '/api': {
-        target: 'http://test.signin.tueye.com',
+        // target: 'http://test.signin.tueye.com',
+        target: 'http://180.76.156.27:12001',
         ws: true,
         changeOrigin: true,
       },
