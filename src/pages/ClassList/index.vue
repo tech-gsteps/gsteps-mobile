@@ -72,7 +72,7 @@
     >
       当前没有课程记录
     </div>
-    <div v-if="!noData" class="more-data">
+    <div v-if="!noData && classListData.records && classListData.records.length > 0" class="more-data">
       <VanButton v-if="dataLoading" loading type="default" size="normal" loading-text="加载中..." >加载中</VanButton>
       <van-button @click="getRecordList" v-if="!dataLoading" type="default">加载更多</van-button>
     </div>
