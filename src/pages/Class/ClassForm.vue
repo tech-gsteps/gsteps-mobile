@@ -50,7 +50,6 @@
         @click="handlePopup('teacher')"
       />
       <div class="card-list">
-
         <VanCell
           title="课卡类型"
           is-link
@@ -58,11 +57,17 @@
           :value="cardValue"
           @click="handleCardPopup('card')"
         />
-        <VanCell v-for="(item, index) in cardValueList" :key="item.id" :title="item.name">
-          <VanStepper :default-value="item.spend" @change="handleSpend($event, item.id)" />
+        <VanCell
+          v-for="(item, index) in cardValueList"
+          :key="item.id"
+          :title="item.name"
+        >
+          <VanStepper
+            :default-value="item.spend"
+            @change="handleSpend($event, item.id)"
+          />
         </VanCell>
       </div>
-
     </VanCellGroup>
 
     <VanPopup
@@ -175,26 +180,26 @@ export default {
     cardValueList() {
     	const ret = [];
       this.relateData.card.forEach(item => {
-      	if(this.currentData.card_types.includes(item.id)) {
+      	if (this.currentData.card_types.includes(item.id)) {
       		// let defultSpend = 1;// 默认消耗次数
           // // let card = this.relateData.cards.find((c)=>{
           // // 	return c.id === item.id;
           // // });
           // // 如果是储值卡,则默认消耗 150
           // if(item.type_id === 2) {
-					// 	defultSpend = 150;
+          // 	defultSpend = 150;
           // }
-      		const tmp = { ...item, spend: 1};
+      		const tmp = { ...item, spend: 1 };
 
-      		if(this.currentData.cardList) {
-      			for(const c of this.currentData.cardList) {
-      				if(c.id === item.id) {
-								tmp.spend = c.spend;
+      		if (this.currentData.cardList) {
+      			for (const c of this.currentData.cardList) {
+      				if (c.id === item.id) {
+                tmp.spend = c.spend;
               }
             }
           }
-					ret.push(tmp);
-				}
+          ret.push(tmp);
+        }
       });
       return ret;
     },
@@ -231,45 +236,41 @@ export default {
       // this.$toast(`当前值：${value}, 当前索引：${index}`);
     },
     // 选择课卡类型
-		hanldeCardChange(data) {
-			this.currentData.card_types = data;
-			// 初始化提交的可用卡数据
-			let tmpcardList = [];
-			const cardList = this.currentData.cardList;
-			if(data && data.length > 0) {
-				tmpcardList = data.map(id => {
-					let spend = 1;// 默认消耗次数
-					const card = this.relateData.card.find((c) =>{
-						return c.id === id;
-					});
-					// 如果是储值卡,则默认消耗 150
-					if(!!card && card.type_id === 2) {
-						spend = 150;
-					}
-					const obj = cardList.find(i => {
-						if(i.id === id) {
-							return i;
+    hanldeCardChange(data) {
+      this.currentData.card_types = data;
+      // 初始化提交的可用卡数据
+      let tmpcardList = [];
+      const cardList = this.currentData.cardList;
+      if (data && data.length > 0) {
+        tmpcardList = data.map(id => {
+          let spend = 1;// 默认消耗次数
+          const card = this.relateData.card.find(c => c.id === id);
+          // 如果是储值卡,则默认消耗 150
+          if (!!card && card.type_id === 2) {
+            spend = 150;
+          }
+          const obj = cardList.find(i => {
+            if (i.id === id) {
+              return i;
             }
           });
-					if(obj) {
-						spend = obj.spend;
+          if (obj) {
+            spend = obj.spend;
           }
-					return {
-						id: id,
-						spend: spend,
+          return {
+            id,
+            spend,
           };
         });
-
-			}
-			this.currentData.cardList = tmpcardList;
-
-		},
-    handleSpend(spend, id ) {
-    	for(let item of this.currentData.cardList) {
-				if(item.id === id) {
-					item.spend = spend;
-					break;
-				}
+      }
+      this.currentData.cardList = tmpcardList;
+    },
+    handleSpend(spend, id) {
+    	for (const item of this.currentData.cardList) {
+        if (item.id === id) {
+          item.spend = spend;
+          break;
+        }
       }
     },
     toggle(index) {
@@ -384,11 +385,11 @@ export default {
         start_time,
         classroom_id,
         teacher_id,
-				cardList,
+        cardList,
       } = this.currentData;
       let card_list = [];
-      if(cardList) {
-				card_list = JSON.stringify(cardList);
+      if (cardList) {
+        card_list = JSON.stringify(cardList);
       }
       const sendData = {
         course_level_id,
@@ -397,7 +398,7 @@ export default {
         start_time,
         classroom_id,
         teacher_id,
-				card_list,
+        card_list,
       };
       let url;
       const ADD_URL = '/api/activity/add';
@@ -412,13 +413,17 @@ export default {
       this.$axios.post(url, sendData).then(response => {
         if (response.data.code === 0) {
           this.$toast('保存成功');
-					this.$router.go(-1); //
-          // this.$router.replace({
-          //   name: 'classDetail',
-          //   query: {
-          //     id: response.data.res.activity_id,
-          //   },
-          // });
+          if (this.type === 'create') {
+            this.$router.replace({
+              name: 'classDetail',
+              query: {
+                id: response.data.res.activity_id,
+              },
+            });
+          } else {
+            this.$router.go(-1); //
+          }
+
         } else {
           this.$toast(response.data.msg);
         }

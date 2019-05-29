@@ -15,14 +15,17 @@
           {{ activeData.name }}{{ getCountSpend }}
         </span>
       </li>
-      <li class="card-data" v-if="cardData.length > 0">
+      <li
+        class="card-data"
+        v-if="cardData.length > 0"
+      >
         <VanCell
-                v-if="cardData.length > 0"
-                title="支付卡"
-                is-link
-                arrow-direction="down"
-                :value="seclectCardName"
-                @click="handlePopup('card')"
+          v-if="cardData.length > 0"
+          title="支付卡"
+          is-link
+          arrow-direction="down"
+          :value="seclectCardName"
+          @click="handlePopup('card')"
         />
       </li>
       <li v-else>
@@ -51,15 +54,15 @@
     </VanButton>
 
     <VanPopup
-            v-model="showPicker"
-            position="bottom"
+      v-model="showPicker"
+      position="bottom"
     >
       <VanPicker
-              :columns="pickerConfig.columns"
-              show-toolbar
-              :title="pickerConfig.title"
-              @cancel="onCancel"
-              @confirm="onConfirm"
+        :columns="pickerConfig.columns"
+        show-toolbar
+        :title="pickerConfig.title"
+        @cancel="onCancel"
+        @confirm="onConfirm"
       />
     </VanPopup>
   </div>
@@ -68,53 +71,53 @@
 import ClassInfo from '@/pages/ClassList/ClassInfo.vue';
 import GNavBar from '@/layout/GNavBar';
 import { Toast } from 'vant';
+
 export default {
   components: {
     ClassInfo,
-		GNavBar,
+    GNavBar,
   },
   data() {
     return {
       detailData: {},
       activeData: {},
-			pickerType: '',
-			showPicker: false,
+      pickerType: '',
+      showPicker: false,
       selectCard: null, // 当前选中的支付卡
-			pickerConfig: {
-				columns: [],
-				title: '',
-			},
-		};
+      pickerConfig: {
+        columns: [],
+        title: '',
+      },
+    };
   },
   computed: {
     cardData() {
       return this.activeData.card_list || [];
     },
-    getCountSpend(){
-    	if(this.selectCard && this.detailData.card_list) {
-        for(const card of this.detailData.card_list) {
-        	if( card.card_id === this.selectCard.card_id) {
-						let t = '';
-						if (card.card_type_id === 2) {
-							t = `元`;
-						} else {
-							t = `次`;
-						}
+    getCountSpend() {
+    	if (this.selectCard && this.detailData.card_list) {
+        for (const card of this.detailData.card_list) {
+        	if (card.card_id === this.selectCard.card_id) {
+            let t = '';
+            if (card.card_type_id === 2) {
+              t = '元';
+            } else {
+              t = '次';
+            }
         		return (`${card.card_name}${card.spend}${t}`);
           }
         }
       }
-			return '请选择消费的卡';
-
-		},
+      return '请选择消费的卡';
+    },
     isDisabled() {
-    	if(this.selectCard && (this.selectCard.remains > 0 || this.selectCard.type_id === 1)) {
+    	if (this.selectCard && (this.selectCard.remains > 0 || this.selectCard.type_id === 1)) {
     		return false;
       }
       return true;
     },
-		seclectCardName() {
-			return this.getCardShowTitle(this.selectCard);
+    seclectCardName() {
+      return this.getCardShowTitle(this.selectCard);
     },
   },
   async created() {
@@ -123,13 +126,13 @@ export default {
     };
     const responseDetail = await this.$axios.post('/api/activity/detail', sendData);
     const responseActive = await this.$axios.post('/api/membership/active', {
-			show_disabled: 0, // 不显示失效卡
-			activity_id: sendData.activity_id,
-			get_relation: 1, // 获取相关账号(亲子账号)的可用卡
+      show_disabled: 0, // 不显示失效卡
+      activity_id: sendData.activity_id,
+      get_relation: 1, // 获取相关账号(亲子账号)的可用卡
     });
     this.detailData = responseDetail.data.res;
     this.activeData = responseActive.data.res;
-    if(this.activeData.card_list && this.activeData.card_list.length >0) {
+    if (this.activeData.card_list && this.activeData.card_list.length > 0) {
     	this.selectCard = this.activeData.card_list[0];
     }
   },
@@ -158,42 +161,41 @@ export default {
           this.$toast(response.data.msg);
         }
       });
-			this.showPicker = false;
-		},
-		handlePopup(type) {
-			this.pickerType = type;
-			this.showPicker = true;
-			switch (this.pickerType) {
-				case 'card':
-					this.pickerConfig.columns = [{
-						values: this.cardData.map(item => this.getCardShowTitle(item)),
-						defaultIndex: 0,
-					}];
-					break;
-			}
-		},
-		onCancel() {
-			this.showPicker = false;
-		},
-		onConfirm(value, index) {
-			switch (this.pickerType) {
-
-				case 'card': {
-					this.selectCard = this.activeData.card_list[index];
-					break;
-				}
-				default:
-					break;
-			}
-			this.showPicker = false;
-		},
+      this.showPicker = false;
+    },
+    handlePopup(type) {
+      this.pickerType = type;
+      this.showPicker = true;
+      switch (this.pickerType) {
+        case 'card':
+          this.pickerConfig.columns = [{
+            values: this.cardData.map(item => this.getCardShowTitle(item)),
+            defaultIndex: 0,
+          }];
+          break;
+      }
+    },
+    onCancel() {
+      this.showPicker = false;
+    },
+    onConfirm(value, index) {
+      switch (this.pickerType) {
+        case 'card': {
+          this.selectCard = this.activeData.card_list[index];
+          break;
+        }
+        default:
+          break;
+      }
+      this.showPicker = false;
+    },
     // 获得会员卡显示标题
     getCardShowTitle(card) {
     	let ret = '';
-    	if(card) {
-				ret = `「${card.user_name}」的${card.name}（余额：${card.remains}）`;
+    	if (card) {
+        ret = `「${card.user_name}」的${card.name}（余额：${card.remains}）`;
       }
-			return ret;
+      return ret;
     },
   },
 };

@@ -11,26 +11,26 @@
 </template>
 <script>
 export default {
-	props: {
-		isShowBack: {
-			type: Boolean,
-			required: false,
-			default: true,
-		},
+  props: {
+    isShowBack: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
-	computed: {
-		getLeftText() {
-			if(this.isShowBack) {
-				return '返回';
-			}
-			return '';
-    }
+  computed: {
+    getLeftText() {
+      if (this.isShowBack) {
+        return '返回';
+      }
+      return '';
+    },
   },
   methods: {
     onClickLeft() {
-    	if(this.isShowBack) {
-				this.$router.go(-1);
-			}
+    	if (this.isShowBack) {
+        this.$router.go(-1);
+      }
     },
     onClickRight() {
       this.$router.push({ path: '/' });

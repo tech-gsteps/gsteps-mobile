@@ -72,6 +72,10 @@
     >
       当前没有课程记录
     </div>
+    <div v-if="!noData" class="more-data">
+      <VanButton v-if="dataLoading" loading type="default" size="normal" loading-text="加载中..." >加载中</VanButton>
+      <van-button @click="getRecordList" v-if="!dataLoading" type="default">加载更多</van-button>
+    </div>
   </div>
 </template>
 <script>
@@ -89,6 +93,10 @@ export default {
         join_time: '',
         role: '',
       },
+      page: 1,
+      size: 20,
+      noData: false,
+      dataLoading: false,
     };
   },
   computed: {
@@ -97,9 +105,10 @@ export default {
     ]),
   },
   created() {
-    this.$axios.post('/api/activity/record').then(response => {
-      this.classListData = response.data.res;
-    });
+    this.getRecordList();
+    // this.$axios.post('/api/activity/record').then(response => {
+    //   this.classListData = response.data.res;
+    // });
   },
   filters: {
     roleFilter(val) {
@@ -117,6 +126,32 @@ export default {
     },
     createClass() {
       this.$router.push({ name: 'createClass' });
+    },
+    getRecordList() {
+      if (!this.noData) {
+        this.dataLoading = true;
+        this.$axios.post('/api/activity/record', { page: this.page, size: this.size }).then(response => {
+          this.page ++;
+          this.dataLoading = false;
+          let data = response.data.res;
+          this.classListData.join_time = data.join_time;
+          this.classListData.role = data.role;
+          if (data.count > 0) {
+            this.classListData.count = data.count;
+          }
+          if (data.records && data.records.length > 0) {
+            if (this.classListData.records) {
+              this.classListData.records = [...this.classListData.records, ...data.records ];
+            } else {
+              this.classListData.records = data.records;
+            }
+          }
+          if (!data.records || data.records.length <= 0 || data.records.length < this.size) {
+            this.noData = true;
+          }
+        });
+      }
+
     },
   },
 
@@ -187,6 +222,18 @@ export default {
   .class-info {
     font-size: 10px;
     line-height: 14px;
+  }
+}
+.more-data {
+  text-align: center;
+  margin: 10px 0;
+
+  .van-button {
+    background: #FFBC00;
+    border: 0;
+    &:before{
+      content: none;
+    }
   }
 }
 </style>

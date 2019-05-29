@@ -5,16 +5,23 @@
   >
     <div class="brand">
       <span>G-STEPS CREW</span>
-      <span class="brand-name">{{ card.name }}</span>
+      <span class="brand-name">
+        {{ card.name }}
+      </span>
     </div>
     <div class="feature">
-      <div class="card--timesall card--text-color feature-limit" v-if="card.card_type_id !==1">
+      <div
+        class="card--timesall card--text-color feature-limit"
+        v-if="card.card_type_id !==1"
+      >
         <span>{{ getRemainsInfo.limit }}</span>
       </div>
-      <div class="card--timesleft card--text-color feature-remains" v-if="card.card_type_id !==1">
+      <div
+        class="card--timesleft card--text-color feature-remains"
+        v-if="card.card_type_id !==1"
+      >
         {{ getRemainsInfo.remains }}
       </div>
-
     </div>
     <div class="decorator card--text-color">
       /////////////////////////////////
@@ -42,19 +49,19 @@ export default {
         passive: this.card.status !== '已激活',
       };
     },
-    getRemainsInfo(){
-			// 价格显示字段
-			let t = '';
-			if (this.card.card_type_id === 2) {
-				t = '元';
-			} else {
-				t = '次';
-			}
-			return {
-				remains: `剩余${this.card.remains}${t}`,
-				limit: `${this.card.limit}${t}`,
+    getRemainsInfo() {
+      // 价格显示字段
+      let t = '';
+      if (this.card.card_type_id === 2) {
+        t = '元';
+      } else {
+        t = '次';
+      }
+      return {
+        remains: `剩余${this.card.remains}${t}`,
+        limit: `${this.card.limit}${t}`,
       };
-    }
+    },
   },
 };
 </script>
