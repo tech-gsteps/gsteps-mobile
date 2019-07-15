@@ -105,7 +105,8 @@ export default {
         };
         vm.$axios.post('/api/signin/info', sendData).then(response => {
           if (response.data.code === 0) {
-            if (response.data.res.result === 0) {
+            // # 0未预约，1已预约(签到)
+            if (response.data.res.status === 0) {
               vm.$router.replace({
                 name: 'orderConfirm',
                 query: {

@@ -65,6 +65,7 @@ router.beforeEach((to, from, next) => {
   Axios.post('/api/user/checklogin').then(response => {
     const res = response.data.res;
     console.log(res);
+    const avatar = res.headimgurl;
     if (response.data.code !== 0) {
       Toast(res.msg);
     } else if (!res.login) {
@@ -80,7 +81,7 @@ router.beforeEach((to, from, next) => {
             store.dispatch('setRole', {
               role_mapping: res.role_mapping,
               role_id: res.role_id,
-              logo_url: res.logo_url,
+              logo_url: avatar,
             });
             if (res.role_id === 0) {
               next({ path: '/signin' });
