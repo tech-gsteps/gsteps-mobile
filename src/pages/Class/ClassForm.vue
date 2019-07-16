@@ -133,7 +133,7 @@
 </template>
 
 <script>
-import { formatAllDate } from '@/utils';
+import { formatAllDate, formatAllDate2 } from '@/utils';
 
 const type_cn = {
   create: '创建课程',
@@ -400,8 +400,9 @@ export default {
         teacher_id,
         card_list,
       };
+      sendData.start_time = formatAllDate2(sendData.start_time);
       let url;
-      const ADD_URL = '/api/activity/add';
+      const ADD_URL = '/api/course/add';
       const EDIT_URL = '/api/activity/update';
       if (this.type === 'create') {
         url = ADD_URL;
@@ -414,12 +415,16 @@ export default {
         if (response.data.code === 0) {
           this.$toast('保存成功');
           if (this.type === 'create') {
-            this.$router.replace({
-              name: 'classDetail',
-              query: {
-                id: response.data.res.activity_id,
-              },
-            });
+            if(response.data.res.activity_id_list && response.data.res.activity_id_list.length > 0) {
+              this.$router.replace({
+                name: 'classDetail',
+                query: {
+                  id: response.data.res.activity_id_list[0],
+                },
+              });
+            }else {
+              this.$router.go(-1); //
+            }
           } else {
             this.$router.go(-1); //
           }

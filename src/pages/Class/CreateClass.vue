@@ -114,7 +114,7 @@ export default {
         spend,
       };
 
-      this.$axios.post('/api/activity/add', sendData).then(response => {
+      this.$axios.post('/api/course/add', sendData).then(response => {
         // this.relateData = response.data.res;
         if (response.data.code === 0) {
           this.$toast('创建成功');
