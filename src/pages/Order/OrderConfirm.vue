@@ -141,6 +141,7 @@ export default {
       const sendData = {
         activity_id: this.$route.query.id,
         membership_id: this.selectCard.membership_id,
+        is_signin: 1,
       };
       Toast.loading({
         mask: true,
